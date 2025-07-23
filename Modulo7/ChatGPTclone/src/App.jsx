@@ -1,23 +1,21 @@
 import { useState } from 'react'
+import axios from 'axios'
 import './App.css'
 
-const mock_Messages = [
-  { text: "Hola", sender: "user" },
-  { text: "Hola, ¿en qué te puedo ayudar hoy?", sender: "LLM" },
-  { text: "Quiero que me digas un chiste", sender: "user" },
-  { text: "¿Cuál es el animal más antiguo del mundo?", sender: "LLM" },
-  { text: "¿El dinosaurio?", sender: "user" },
-  { text: "¡No!. La cebra, ¡porque está en blanco y negro!", sender: "LLM" },
+const mock_messages = [
+  { content: "Hola", role: "user" },
+  { content: "Hola, en que te puedo ayudar hoy?", role: "assistant" },
+  { content: "Quiero que me digas como programar mejor", role: "user" },
+  { content: "Claro, sigue éstos consejos: puedes usar JavaScript, Python o C++, dependiendo de tu nivel de programación", role: "assistant" }
 ]
 
 
 function App() {
   const [input, setInput] = useState('')
-  const [messages, setMessages] = useState(mock_Messages)
+  const [messages, setMessages] = useState(mock_messages)
 
-  function sendMessage() {
+  async function sendMessage() {
     console.log("Enviando mensaje", input)
-
 
     /* Paso por paso...
     const new_messages = [...messages]
@@ -26,20 +24,38 @@ function App() {
     setMessages(new_messages)
     */
 
-    setMessages((prev) => [...prev, {text: input, sender: "user"}])
+    setMessages((prev) => [...prev, { content: input, role: "user" }])
 
-    //Simular respuesta
-    setTimeout(() => {
-      setMessages((prev) => [...prev, {text: "Lo siento hubo un problema con el servidor", sender: "LLM"}])
-    },1000)
+    // fetch
+
+    // axios
+
+    const data = {
+      "model": "deepseek-r1:1.5b",
+      "stream": false,
+      "think": false,
+      "raw": true,
+      "messages": [
+        {
+          "role": "user",
+          "content": input
+        }
+      ]
+    };
+
+    const respuesta = await axios.post("http://localhost:11434/api/chat", data)
+
+    console.log(respuesta.data.message)
+
+    setMessages((prev) => [...prev, respuesta.data.message])
   }
 
   return (
     <>
 
-    <div>
-      {messages.map((message, i) => <p key={i} style={message.sender == "user" ? {color: "blue"} : {color: "red"}}>{message.text}</p>)}
-    </div>
+      <div>
+        {messages.map((message, i) => <p key={i} style={message.role == 'user' ? { color: 'blue' } : { color: 'red' }}>{message.content}</p>)}
+      </div>
 
       <input onChange={(e) => setInput(e.target.value)} />
       <button onClick={sendMessage}>Enviar</button>

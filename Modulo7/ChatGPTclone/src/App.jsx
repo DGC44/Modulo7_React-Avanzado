@@ -54,8 +54,8 @@ function App() {
   }
 
   useEffect(() => {
-    loadMessages()
-  }, [])
+  loadMessages()
+  }, [loadMessages])
 
   return (
     <>

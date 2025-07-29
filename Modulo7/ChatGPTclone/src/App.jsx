@@ -5,6 +5,7 @@ import Input from './components/Input'
 import { ConversationContext } from './contexts/ConversationProvider'
 import './App.css'
 
+
 const MOCK_MESSAGES = [
   { content: "Hola", role: "user" },
   { content: "Hola, en que te puedo ayudar hoy?", role: "assistant" },
